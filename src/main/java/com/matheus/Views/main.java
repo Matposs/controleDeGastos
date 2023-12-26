@@ -4,13 +4,13 @@ import java.sql.Connection;
 
 import com.matheus.Controller.DiarioController;
 import com.matheus.Dao.ConexaoBanco;
+import com.matheus.Dao.DiarioDao;
 import com.matheus.Utils.Console;
 
 public class main {
     public static void main(String[] args) {
-        
-        ConexaoBanco conexaoBanco = new ConexaoBanco();
-        Connection conexao = conexaoBanco.obterConexaoBancoDeDados();
+
+        ConexaoBanco conexao = ConexaoBanco.obterInstancia();
         DiarioController diarioController = new DiarioController(conexao);
 
         int opcao;
@@ -27,11 +27,12 @@ public class main {
                     break;
                 case 3:
                     int id = Console.readInt("Informe o ID da conta a ser excluída: ");
-                    diarioController.Deletar(id, null);
+                    diarioController.deletar(id);
                     break;
                 case 4:
                     int idEditar = Console.readInt("Informe o ID da conta a ser editada: ");
-                    diarioController.Editar(idEditar);
+                    float novoValor = Console.readFloat("Informe o novo valor: ");
+                    diarioController.editar(idEditar, novoValor);
                     break;
                 case 5:
                     System.out.println("Saindo do programa.");

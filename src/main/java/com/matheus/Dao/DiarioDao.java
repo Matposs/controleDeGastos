@@ -11,18 +11,20 @@ import com.matheus.Models.Diario;
 
 public class DiarioDao {
 
-    private Connection conexao;
-    public DiarioDao(Connection conexao) {
-        this.conexao = conexao;
+    private ConexaoBanco conexaoBanco;
+
+    public DiarioDao(ConexaoBanco conexaoBanco) {
+        this.conexaoBanco = conexaoBanco;
     }
+
     public void adicionarDiario(Diario diario) throws SQLException {
         String sql = "INSERT INTO ContasDiarias (descricao, valor, data) VALUES (?, ?, ?)";
 
-        try (PreparedStatement statement = conexao.prepareStatement(sql)) {
+        try (Connection conexao = conexaoBanco.abrirConexao();
+                PreparedStatement statement = conexao.prepareStatement(sql)) {
             statement.setString(1, diario.getDescricao());
             statement.setFloat(2, diario.getValor());
             statement.setDate(3, java.sql.Date.valueOf(diario.getData()));
-
             statement.executeUpdate();
         }
     }
@@ -31,7 +33,8 @@ public class DiarioDao {
         List<Diario> diarios = new ArrayList<>();
         String sql = "SELECT * FROM ContasDiarias";
 
-        try (PreparedStatement statement = conexao.prepareStatement(sql)) {
+        try (Connection conexao = conexaoBanco.abrirConexao();
+                PreparedStatement statement = conexao.prepareStatement(sql)) {
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     Diario diario = new Diario();
@@ -39,7 +42,6 @@ public class DiarioDao {
                     diario.setDescricao(resultSet.getString("descricao"));
                     diario.setValor(resultSet.getFloat("valor"));
                     diario.setData(resultSet.getDate("data").toLocalDate());
-
                     diarios.add(diario);
                 }
             }
@@ -52,7 +54,8 @@ public class DiarioDao {
     public void excluirDiario(int id) throws SQLException {
         String sql = "DELETE FROM ContasDiarias WHERE id = ?";
 
-        try (PreparedStatement statement = conexao.prepareStatement(sql)) {
+        try (Connection conexao = conexaoBanco.abrirConexao();
+                PreparedStatement statement = conexao.prepareStatement(sql)) {
             statement.setInt(1, id);
             statement.executeUpdate();
         }
@@ -62,7 +65,8 @@ public class DiarioDao {
     public void atualizarDiario(int id, float novoValor) throws SQLException {
         String sql = "UPDATE ContasDiarias SET valor = ? WHERE id = ?";
 
-        try (PreparedStatement statement = conexao.prepareStatement(sql)) {
+        try (Connection conexao = conexaoBanco.abrirConexao();
+                PreparedStatement statement = conexao.prepareStatement(sql)) {
             statement.setFloat(1, novoValor);
             statement.setInt(2, id);
             statement.executeUpdate();
